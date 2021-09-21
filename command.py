@@ -14,7 +14,7 @@ async def on_command(words, message, mentions, client):
         clearingMessage = "Clearing "
 
         def check(m):
-            return m.content == "Yes" or "No" and m.channel == message.channel
+            return (m.content == "Yes" or m.content == "No") and m.channel == message.channel
 
         msg = await client.wait_for('message', check=check)
         if msg.content != "Yes":
