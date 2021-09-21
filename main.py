@@ -15,13 +15,6 @@ async def on_ready():
     print(f"{client.user.name} has connected to Discord!")
 
 @client.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f"สวัสดีครับ {member.name} ยินดีต้อนรับ"
-        )
-
-@client.event
 async def on_message(message):
     if message.author == client.user:
         return
