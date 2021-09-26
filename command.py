@@ -1,6 +1,6 @@
 import asyncio
 
-COMMANDS = ["test", "clear"]
+COMMANDS = ["test", "clear", "play"]
 
 async def on_command(words, message, mentions, client):
     if words[0] == COMMANDS[0]:
@@ -14,11 +14,19 @@ async def on_command(words, message, mentions, client):
         clearingMessage = "Clearing "
 
         def check(m):
-            return (m.content == "Yes" or m.content == "No") and m.channel == message.channel
+            return (m.content == "Yes" or m.content == "No") and m.channel == message.channel and m.author == message.author
 
-        msg = await client.wait_for('message', check=check)
+        try:
+            msg = await client.wait_for('message', check=check, timeout=6)
+        except asyncio.TimeoutError:
+            await message.channel.send('👎 Timed out')
+
         if msg.content != "Yes":
-            await message.channel.send("Okay, I won't clear the messages.")
+            botRecentMessage = await message.channel.send("Okay, I won't clear the messages.")
+            await asyncio.sleep(5)
+            await msg.delete(delay=3)
+            await botQuestionMessage.delete(delay=3)
+            await botRecentMessage.delete(delay=3)
             return
         if mentions:
             if not message.author.guild_permissions.administrator and mentions[0] != message.author: 
@@ -30,15 +38,17 @@ async def on_command(words, message, mentions, client):
 
         clearingMessage += ".."
         botRecentMessage = await message.channel.send(clearingMessage)
-        async for m in message.channel.history():
+        async for m in message.channel.history(limit=100):
             if m == botRecentMessage:
                 continue
             if not mentions or (m.author == mentions[0]):
                 await m.delete(delay=3)
             
-        await asyncio.sleep(5)    
+        await asyncio.sleep(5)
         await botRecentMessage.delete(delay=3)
         await msg.delete(delay=3)
         await botQuestionMessage.delete(delay=3)
 
-        
+    if words[0] == COMMANDS[2]:
+        ## PLAY COMMAND ##
+        pass
