@@ -27,4 +27,19 @@ async def on_message(message):
                 return 
         await on_command(words, message, mentions, client)
 
-client.run(TOKEN)
+@client.event
+async def on_voice_state_update(member, before, after):
+    channel = member.guild.text_channels[4]
+    if before.channel != after.channel:
+        text = f"{member.mention} "
+        text = text + f"leaved {before.channel.mention} " if before.channel else text
+        text = text + f"and " if before.channel and after.channel else text
+        text = text + f"joined {after.channel.mention} " if after.channel else text
+        await channel.send(text)
+    else:
+        if after.self_mute:
+            await channel.send(f"{member.mention} ปิดไมค์")
+        if after.self_deaf:
+            await channel.send(f"{member.mention} ปิดเสียง")
+
+client.run(TOKEN) 
